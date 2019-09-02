@@ -4,7 +4,7 @@ A pure python NN library, used to showcase how they work.
 
 ## Documentation
 
-1. [Introduction](documentation/Introduction.html)
+1. [Introduction](https://htmlpreview.github.io/?https://github.com/gruberpatrick/nn/blob/master/documentation/Introduction.html)
 
 ## Run the library:
 
