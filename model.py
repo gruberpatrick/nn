@@ -99,8 +99,8 @@ if __name__ == '__main__':
 
     X, Y = load_easy_dataset()
 
-    # plt.scatter(X[0, :], X[1, :], c=Y.reshape(400,), s=40, cmap=plt.cm.Spectral)
-    # plt.show()
+    plt.scatter(X[0, :], X[1, :], c=Y.reshape(400,), s=40, cmap=plt.cm.Spectral)
+    plt.show()
 
     model_definition = [
         Linear(2, 3),
