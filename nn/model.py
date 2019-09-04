@@ -1,15 +1,8 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from activation import Sigmoid, Tanh, ReLU, Activation
-from loss import CrossEntropy, Loss
-from layer import Linear, Layer
-from data.test_datasets import load_planar_dataset, load_easy_dataset
-
-
-sigmoid = Sigmoid()
-cross_entropy = CrossEntropy()
-tanh = Tanh()
-relu = ReLU()
+from nn.activation import Activation
+from nn.loss import BinaryCrossEntropy
+from nn.layer import Layer
+from nn.initializer import XavierNormal
 
 
 class Sequential:
@@ -17,14 +10,22 @@ class Sequential:
     _cache = {}
     _explain = False
 
-    def __init__(self, layers):
+    def __init__(self, layers, initializer=XavierNormal()):
 
         self._layers = layers
+
+        if initializer:
+            for layer in self._layers:
+                if isinstance(layer, Layer):
+                    initializer.init_layer(layer)
 
     def forward(self, X):
 
         out = X
         self._cache["l0"] = out
+        if self._explain:
+            print("==========================")
+            print("  l0")
 
         for it in range(len(self._layers)):
             out = self._layers[it].forward(out)
@@ -73,41 +74,26 @@ class Sequential:
                 continue
             layer.reset_gradients()
 
-    def train(self, X, Y, n_h, loss=CrossEntropy(), num_iterations=10000, print_cost=False):
+    def train(self, X, Y, n_h, loss=BinaryCrossEntropy(), epochs=10000, print_loss=False):
 
         self._loss = loss
 
-        for i in range(0, num_iterations):
+        for i in range(0, epochs):
 
             self.zero_grad()
 
             y_hat = self.forward(X)
-            cost = self._loss.forward(y_hat, Y)
+            loss = self._loss.forward(y_hat, Y)
 
             self.backward(X, Y)
             self.optim_step(learning_rate=1.2)
 
             if self._explain:
+                print("X.shape", X.shape)
+                print("Y.shape", Y.shape)
+                print("y_hat.shape", y_hat.shape)
                 print("Aboring training to cut output.")
-                exit()
+                return
 
-            if print_cost and i % 1000 == 0:
-                print("Cost after iteration %i: %f" % (i, cost))
-
-
-if __name__ == '__main__':
-
-    X, Y = load_easy_dataset()
-
-    plt.scatter(X[0, :], X[1, :], c=Y.reshape(400,), s=40, cmap=plt.cm.Spectral)
-    plt.show()
-
-    model_definition = [
-        Linear(2, 3),
-        Sigmoid(),
-        Linear(3, 1),
-        Sigmoid(),
-    ]
-
-    model = Sequential(model_definition)
-    model.train(X, Y, n_h=4, num_iterations=100000, print_cost=True)
+            if print_loss and i % 1000 == 0:
+                print("Loss after {:.2f}%: {}".format(i * 100 / epochs, loss))

@@ -1,7 +1,9 @@
 import numpy as np
+import math
 
 
 def load_planar_dataset():
+
     np.random.seed(1)
     m = 400
     N = int(m / 2)
@@ -20,7 +22,7 @@ def load_planar_dataset():
     X = X.T
     Y = Y.T
 
-    return X, Y
+    return X / 5, Y
 
 
 def load_easy_dataset():
@@ -38,3 +40,27 @@ def load_easy_dataset():
         Y.append(1)
 
     return np.array(X), np.array([Y])
+
+
+def load_easy_dataset_extended():
+
+    X = [[], []]
+    Y = []
+
+    for _ in range(100):
+
+        X[0].append(-.75*np.random.random())
+        X[1].append(-.75*np.random.random())
+        X[0].append(-.75*np.random.random())
+        X[1].append(.75*np.random.random())
+        X[0].append(.75*np.random.random())
+        X[1].append(.75*np.random.random())
+        X[0].append(.75*np.random.random())
+        X[1].append(-.75*np.random.random())
+        Y.append(0)
+        Y.append(1)
+        Y.append(0)
+        Y.append(1)
+
+    return np.array(X), np.array([Y])
+

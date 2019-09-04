@@ -10,7 +10,7 @@ class Loss:
         raise Exception("Function `backward` not implemented.")
 
 
-class CrossEntropy(Loss):
+class BinaryCrossEntropy(Loss):
 
     def forward(self, a, Y):
         m = Y.shape[1]
