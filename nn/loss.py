@@ -21,3 +21,16 @@ class BinaryCrossEntropy(Loss):
         if explain:
             print("dL/dA = -(y/a) + ((1-y)/(1-a))")
         return -(Y / a) + ((1 - Y) / (1 - a))
+
+
+class MeanSquaredError(Loss):
+
+    def forward(self, a, Y):
+        m = Y.shape[0]
+        res = 1/(2*m) * np.sum(np.power(a - Y, 2))
+        return np.squeeze(res)
+
+    def backward(self, a, Y, explain):
+        if explain:
+            print("dL/dA = a - Y")
+        return a - Y

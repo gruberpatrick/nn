@@ -13,7 +13,10 @@ class Activation:
 class Sigmoid(Activation):
 
     def forward(self, z):
-        return 1 / (1 + np.exp(-z))
+        res = 1 / (1 + np.exp(-z))
+        res[res == 1.0] = 0.99999
+        res[res == 0.0] = 0.00001
+        return res
 
     def backward(self, da, z, explain):
         if explain:

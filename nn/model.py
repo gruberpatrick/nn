@@ -29,9 +29,9 @@ class Sequential:
 
         for it in range(len(self._layers)):
             out = self._layers[it].forward(out)
-            self._cache["l"+str(it+1)] = out
+            self._cache["l" + str(it + 1)] = out
             if self._explain:
-                print("  l"+str(it + 1))
+                print("  l" + str(it + 1))
 
         return out
 
@@ -41,23 +41,23 @@ class Sequential:
 
         if self._explain:
             print("==========================")
-            print("  l"+str(layer_count))
+            print("  l" + str(layer_count))
 
-        out = self._loss.backward(self._cache["l"+str(layer_count)], Y, self._explain)
+        out = self._loss.backward(self._cache["l" + str(layer_count)], Y, self._explain)
 
         for it in range(len(self._layers) - 1, -1, -1):
             if self._explain:
-                print("  l"+str(it))
+                print("  l" + str(it))
             if isinstance(self._layers[it], Activation):
-                out = self._layers[it].backward(out, self._cache["l"+str(it)], self._explain)
+                out = self._layers[it].backward(out, self._cache["l" + str(it)], self._explain)
             elif isinstance(self._layers[it], Layer):
-                self._layers[it].backward(out, self._cache["l"+str(it)], self._explain)
+                self._layers[it].backward(out, self._cache["l" + str(it)], self._explain)
                 if it > 0:
                     if self._explain:
                         print("dL/dA = dL/dZ * W")
                     out = np.dot(self._layers[it]._W.T, out)
 
-    def optim_step(self, learning_rate=1.2):
+    def optim_step(self, learning_rate=5):
 
         for layer in self._layers:
             if not isinstance(layer, Layer):
@@ -74,9 +74,10 @@ class Sequential:
                 continue
             layer.reset_gradients()
 
-    def train(self, X, Y, n_h, loss=BinaryCrossEntropy(), epochs=10000, print_loss=False):
+    def train(self, X, Y, n_h, loss=BinaryCrossEntropy(), epochs=10000, print_loss=False, metrics=[]):
 
         self._loss = loss
+        self._hist = {'loss': []}
 
         for i in range(0, epochs):
 
@@ -84,6 +85,8 @@ class Sequential:
 
             y_hat = self.forward(X)
             loss = self._loss.forward(y_hat, Y)
+
+            self._hist['loss'].append(loss)
 
             self.backward(X, Y)
             self.optim_step(learning_rate=1.2)
@@ -95,5 +98,5 @@ class Sequential:
                 print("Aboring training to cut output.")
                 return
 
-            if print_loss and i % 1000 == 0:
+            if i % 1000 == 0:
                 print("Loss after {:.2f}%: {}".format(i * 100 / epochs, loss))

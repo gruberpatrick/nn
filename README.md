@@ -17,7 +17,7 @@ python model.py
 
 The provided `model.py` file provides a sequential model format. You can use it like this:
 
-```
+```python
 from activation import Sigmoid
 from loss import CrossEntropy
 from model import Sequential
